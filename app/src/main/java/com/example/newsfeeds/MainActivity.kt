@@ -4,34 +4,34 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Toast
+
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.AuthFailureError
-import com.android.volley.Request
-import com.android.volley.Response
+import com.android.volley.*
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
+
 import kotlinx.android.synthetic.main.activity_main.*
+
+
 
 class MainActivity : AppCompatActivity(), NewsItemClicked {
     lateinit var mAdapter: NewsListAdapter
+    private lateinit var url : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
-        fetchData()
+
+        url = "https://newsapi.org/v2/top-headlines?country=in" +
+                "&apiKey=3ea5fd3c07b34d62b5fef3430f7eb3d0"
+        fetchData(url)
          mAdapter = NewsListAdapter(this)
         recyclerView.adapter = mAdapter
-
     }
 
-    fun fetchData() {
-        val url = "https://newsapi.org/v2/top-headlines?country=in" +
-                "&apiKey=3ea5fd3c07b34d62b5fef3430f7eb3d0"
+    private fun fetchData(url :String) {
         val newsJsonObjectRequest = object : JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -66,10 +66,15 @@ class MainActivity : AppCompatActivity(), NewsItemClicked {
         MySingleton.getInstance(this).addToRequestQueue(newsJsonObjectRequest)
     }
 
-    override fun itemClicked(items : News) {
+    
+
+    override fun itemClicked(news : News) {
         val builder = CustomTabsIntent.Builder();
        val customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(this, Uri.parse(items.url));
+        customTabsIntent.launchUrl(this, Uri.parse(news.url));
     }
 
+
+
+   
 }
